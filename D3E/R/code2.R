@@ -1,9 +1,24 @@
+# performing CVM test
+#' @name check_cramer_von_mises CVM test for checking the distributions.
+#' @param pvalue gets the pvalue
+#' @param comment enters a comment if pvalue is -1.
+#' @return the comment or a pvlaue
 
 check_cramer_von_mises = function(pvalue, comment){
   if(pvalue == -1){
     return(comment)
   }
 }
+
+# Perform parametric estimation
+#' @name parameter_estimation parametric estimation
+#' @param p1 values from pois-beta dist
+#' @param p2 values from pois-beta dist
+#' @param mod a value 0 or 1
+#' @param method select a method 0,1,2,3
+#' @param n the stopping criteria
+#' @return the comment or a pvlaue
+
 
 parameter_estimation = function(p1,p2,mod, method,n){
   try(if(!(mod %in% c(0,1)))stop("select a mode of analysis from 0 and 1"))
@@ -152,6 +167,14 @@ parameter_estimation = function(p1,p2,mod, method,n){
   return(result)
 }
 
+# performing CVM test
+#' @name analysis performs the analysis for DE
+#' @inherit parameter_estimation
+#' @param x cell x
+#' @param y cell y
+#' @param method an estimation method
+#' @param n a hyperparameter
+#' @return the comment or a pvlaue
 
 analysis = function(FUN = parameter_estimation,x,y,mod,method, n=2){
   benchmark = list(NULL)
@@ -162,6 +185,13 @@ analysis = function(FUN = parameter_estimation,x,y,mod,method, n=2){
   }
   return(benchmark)
 }
+
+# Using the benchmark for finding DE genes
+#' @name threshold D3E analysis
+#' @inherit parameter_estimation
+#' @param benchmark coming from dividing cell1 to two parts and its pvlaues
+#' @param x cell x
+#' @return a list of values, pvalues and significant genes.
 
 threshold = function(benchmark,x,fdr = 1){
   pvals = c()

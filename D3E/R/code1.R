@@ -1,23 +1,23 @@
-rm(list = ls())
 
-require(tidyverse)
-require(ggplot2)
-require(tibble)
-require(magrittr)
-require(twosamples)
-require(matrixStats)
-
-##########################################################################
+# This data includes the functions which are used for hypothesis testing and parametric estimation of parametes
+#' hyperpara
+#' @name params
+#' @keywords data
 
 params = list("alpha" = 0, "beta" = 0, "gamma" = 0, "c" = 0)
+#' hyperparameters
+#' @name bio_params
+#' @keywords data
 bio_params = list("size" = NULL,"freq"=NULL,"duty"=NULL)
 
 
 ##########################################################################
 
 
+#' A function for parametric estimation of variabels in D3E
+#' @param func A function inherited from fc, fgamma,falpha,fbeta
+#' @return a list with a sample, a parameter, maen of sample
 
-##########################################################################
 
 set_sample_function = function(func){
   sample_function = func
@@ -89,15 +89,43 @@ mean_ = function(sample){
 }
 
 #########################################################################
+#' hyperpara
+#' @name hyper_para
+#' @keywords data
+
 hyper_para = list("k_alpha" = 1, "theta_alpha" = 100,
                   "k_beta" = 1, "theta_beta" = 100,
                   "k_gamma" = 1)
+#' A function for generating c
+#' @name fc To be used in set_sample_function
+#' @param x an input data
+#' @param p coming from params data
+#' @return a vector of values
 fc = function(x,p) (params$alpha -1)*log(x)+(params$beta - 1) + pi * log(x) - params$gamma*x
+
+#' A function for generating c
+#' @name fgamma To be used in set_sample_function
+#' @param x an input data
+#' @param p coming from params data
+#' @return one value
 fgamma = function(x,p) (hyper_para$k_gamma-1)*log(x)-
   x/max(p)+log(x)*sum(p) - x*sum(params$c)
+
+#' A function for generating c
+#' @name falpha To be used in set_sample_function
+#' @param x an input data
+#' @param p coming from params data
+#' @return one value
+#'
 falpha = function(x,p) (hyper_para$k_alpha-1)*log(x) -
   x/ hyper_para$theta_alpha+length(p)*log(gamma(x+params$beta)) -
   log(gamma(x))*sum(log(params$c))
+
+#' A function for generating c
+#' @name fbeta To be used in set_sample_function
+#' @param x an input data
+#' @param p coming from params data
+#' @return one value
 fbeta = function(x,p)  (hyper_para$k_beta-1)*log(x) -
   x/ hyper_para$theta_beta+length(p)*log(gamma(x+params$alpha)) -
   log(gamma(x))*sum(log(1-params$c))
@@ -106,7 +134,10 @@ fbeta = function(x,p)  (hyper_para$k_beta-1)*log(x) -
 
 
 # normalization
-
+#' A function finding the geometric mean of the data
+#' @name geometric_mean To be used in set_sample_function
+#' @param data the input data
+#' @return geometric mean of each celltype
 geometric_mean = function(data){
   try(if (any(is.na(data)))
     stop("Please remove NA values"))
@@ -118,7 +149,10 @@ geometric_mean = function(data){
   return(geomean)
 }
 
-
+#' A function to gets the weights for normalizing the data
+#' @name weight_normalization gets the weights
+#' @param data the input data
+#' @return the normalized data
 
 weight_normalization = function(data){
   try(if(is.null(dim(data)))
@@ -127,6 +161,12 @@ weight_normalization = function(data){
     stop("Please remove NA values"))
   weight = colMedians(data+1)/geometric_mean(data)
   return(weight)}
+
+#' A function to normalize the data
+#' @name weight_normalization gets the weights
+#' @param data normalized_data
+#' @param weights from normalizatiom weight
+#' @return the normalized data
 
 normalized_data = function(data, weights){
   try(if(is.null(dim(data)))
@@ -149,7 +189,11 @@ normalized_data = function(data, weights){
 
 
 ##########################################################################
-
+#' Performs two-sample KS test
+#' @name kolmogorov_smirnov_test
+#' @param x x celltype x
+#' @param y y celltype y
+#' @return result of ks test pvalues
 
 kolmogorov_smirnov_test = function(x,y){
   result = try(ks_test(x,y),silent = TRUE)
@@ -159,6 +203,11 @@ kolmogorov_smirnov_test = function(x,y){
   return(result[2])
 }
 
+#' Performs two-sample AD test
+#' @name anderson_darling_test
+#' @param x x celltype x
+#' @param y y celltype y
+#' @return result of AD test pvalues
 anderson_darling_test = function(x,y){
   result = try(ad_test(x,y),silent = TRUE)
   if(class(result) == "try-error"){
@@ -166,6 +215,13 @@ anderson_darling_test = function(x,y){
   }
   return(result[2])
 }
+
+
+#' Performs two-sample CVM test
+#' @name cramer_von_masis
+#' @param x x celltype x
+#' @param y y celltype y
+#' @return result of CVM test pvalues
 cramer_von_masis = function(x,y){
   result = try(cvm_test(x,y),silent = TRUE)
   if(class(result) == "try-error"){
@@ -175,7 +231,12 @@ cramer_von_masis = function(x,y){
 }
 
 ##########################################################################
-
+#' A test can be selected here between 3 test and a parametric estimation
+#' @name distribution_test
+#' @param x x celltype x
+#' @param y y celltype y
+#' @param method one of the tests with values 1,2,3
+#' @return result of CVM test pvalues
 
 distribution_test = function(x,y,method){
   if(method == 1){
@@ -190,6 +251,11 @@ distribution_test = function(x,y,method){
 }
 
 ##########################################################################
+#' generating parametres from poisson-beta distribution
+#' @name rand_Poisson_beta
+#' @param params from the param data where alpha, beta, gamma are extracted
+#' @param n the number of samples
+#' @return returns n samples from pois-beta distribution
 
 rand_Poisson_beta = function(params,n){
   x = rbeta(n,params$alpha,params$beta)
@@ -198,7 +264,10 @@ rand_Poisson_beta = function(params,n){
 }
 
 ##########################################################################
-
+#' The posterior parameters
+#' @name get_para_moments
+#' @param p the values come from pois-beta sampke
+#' @return returns a list of parameters alpha, beta , gamma and c
 get_para_moments = function(p){
 
   rm1 = sum(p) / length(p)
@@ -229,7 +298,11 @@ return(params)
 }
 
 ##########################################################################
-
+#' The retrieving the parameters by using get_para_moments
+#' @name get_para_bayesion
+#' @param p the values come from pois-beta sample
+#' @param nIter the number of iterations
+#' @return returns a list of parameters for bayesian estimation
 get_para_bayesion = function(p, nIter = 1000){
   para_fit = get_para_moments(p)
 
@@ -434,6 +507,12 @@ get_para_bayesion = function(p, nIter = 1000){
 
 
 ##########################################################################
+#' performs a goodness of fit test and runs a CvM test
+#' @name goodness_of_fit
+#' @param p the values come from pois-beta sample
+#' @param params parameters from bayesian estimation
+#' @param mean_params from the bayesian estimation
+#' @return returns the result of hypothesis test to check if the genes come from the same distribution
 
 goodness_of_fit = function(p, params, mean_params){
   if(!is.null(mean_params$alpha) & !is.null(mean_params$beta) & !is.null(mean_params$gamma)){
@@ -454,6 +533,12 @@ goodness_of_fit = function(p, params, mean_params){
 
 # Find log of likelihood for sample 'p' with parameters 'params'
 # doing poisson-beta sampling 'n' times
+#' @name log_likelihood gives the loglikelihood
+#' @param p the values come from pois-beta sample
+#' @param params parameters from bayesian estimation
+#' @param mean_params from the bayesian estimation
+#' @param n the iterations
+#' @return returns the loglikelihoos for sample p with parameters params
 
 
 log_likelihood = function(p,params,mean_params,n){
@@ -491,6 +576,14 @@ log_likelihood = function(p,params,mean_params,n){
 
 
 # Perform likelihood ratio test fitted parameters
+#' @name likelihood_ratio performs likelihood ratio test
+#' @param p the values come from pois-beta sample
+#' @param params1 parameters from bayesian estimation cell x
+#' @param params2 parameters from bayesian estimation cell y
+#' @param mean_params1 from the bayesian estimation
+#' @param mean_params3 from the bayesian estimation
+#' @param n the iterations
+#' @return returns the likelihood ratio test between x, y
 
 likelihood_ratio = function(p, params1, params2, mean_params1, mean_params2,n){
   if(!is.null(mean_params1$alpha) & !is.null(mean_params1$beta) & !is.null(mean_params1$gamma)){
@@ -529,7 +622,10 @@ likelihood_ratio = function(p, params1, params2, mean_params1, mean_params2,n){
 
 ##########################################################################
 
-
+#' @param control_split splits the data
+#' @param normalized_dataset gets the normalized data
+#' @param cellname the name of each cell category
+#' @return returns two datasets
 
 control_split = function(normalized_dataset, cellname){
   try(if(any(is.na(normalized_dataset)))
@@ -559,7 +655,11 @@ control_split = function(normalized_dataset, cellname){
   return(list(x = data1,y = data2))
 }
 
-
+# comparing the data and categorizing
+#' @name comparison_data categorizes cells by type
+#' @param normalized_dataset gets the normalized data
+#' @param cellname gets the name of cells
+#' @return returns a dataset with the genetype in the row and cellnames in the cols.
 
 comparison_data = function(normalized_dataset, cellname){
   try(if(any(is.na(normalized_dataset)))
@@ -579,6 +679,13 @@ comparison_data = function(normalized_dataset, cellname){
   colnames(selection) = type_of_cells
   rownames(selection) = rownames(normalized_dataset)
   return(selection)}
+
+# This a function for the result of DE genes
+#' @name finding_threshold compares pvals with a threshold
+#' @param x input data
+#' @param pvals pvalues from distribution tests
+#' @param fdr the threshold
+#' @return returns list of Differentially expressed genes.
 
 finding_threshold = function(x,pvals, fdr = 0.01){
   names(pvals) = rownames(x)
