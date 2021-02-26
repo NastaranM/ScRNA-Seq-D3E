@@ -8,7 +8,7 @@ Description: This package is an implementation of D3E algorithm for analyzing DE
     The package performs parametric and non-parametric DE analysis.
     It can perform likelihood ratio test as well as KS-test, AD-test and CVM test on scRNA data.
 Depends: R (>= 3.6.3), tidyverse, tibble, magrittr, twosamples, matrixStats 
-License: GPL (>= 2)
+License: MIT License
 Encoding: UTF-8
 LazyData: true
 Suggests: 
