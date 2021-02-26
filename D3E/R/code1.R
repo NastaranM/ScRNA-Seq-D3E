@@ -1,6 +1,5 @@
 rm(list = ls())
 
-setwd("~/LiUMaterial/ResearchProject/NSCserver")
 require(tidyverse)
 require(ggplot2)
 require(tibble)
