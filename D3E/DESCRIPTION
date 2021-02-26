@@ -6,7 +6,7 @@ Author: Nastaran Meftahi
 Maintainer: Nastaran Meftahi <nasme581@student.liu.se>
 Description: This package is an implementation of D3E algorithm for analyzing DE genes. The package performs parametric and non-parametric DE analysis. It can perform likelihood ratio test as well as KS-test, AD-test and CVM test on scRNA data.
 Depends: R (>= 3.6.3), tidyverse, tibble, magrittr, twosamples, matrixStats 
-License: MIT License
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 

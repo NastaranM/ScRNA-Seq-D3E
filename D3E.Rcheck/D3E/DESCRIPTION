@@ -13,5 +13,5 @@ LazyData: true
 Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2021-02-26 11:27:10 UTC; nasta
-Built: R 4.0.4; ; 2021-02-26 11:27:13 UTC; windows
+Packaged: 2021-02-26 11:32:58 UTC; nasta
+Built: R 4.0.4; ; 2021-02-26 11:33:02 UTC; windows
