@@ -1,0 +1,6 @@
+language: r
+cache: packages
+install:
+  - Rscript -e 'install.packages(c("devtools","roxygen2","testthat", "knitr", "rmarkdown", "tidyverse", "tibble", "magrittr", "twosamples", "matrixStats"));devtools::install_deps("D3E")'
+script:
+  - Rscript -e 'devtools::check("D3E")'
